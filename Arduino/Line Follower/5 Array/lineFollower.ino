@@ -1,12 +1,10 @@
 int motorBaseSpeed = 255;  
 int motorTurnSpeed = 255;
 
-//hit and trail zone starts
+//hit and trail 
 int Kp = 110;
 int Ki = 0;
 int Kd = 50;
-
-//hit and trail zone ends
 
 const int motorRPin1 = 2;
 const int motorRPin2 = 5;
