@@ -1,0 +1,87 @@
+\documentclass[journal,10pt]{article}
+
+% Packages for font enhancement and page layout
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{ragged2e}
+\usepackage{charter}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem} % Enumerate in roman/alphabets etc
+\usepackage{listings}
+\usepackage{tabularx} % Table with adjustable column width
+\usepackage{tikz} % Required for creating diagrams
+\usepackage{circuitikz}
+\usepackage{karnaugh-map}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{enumitem} % Enumerate in roman/alphabets etc
+\usepackage{titlesec} % Edit section font 
+
+
+\usetikzlibrary{shapes.gates.logic.IEC, positioning}
+
+
+% Other packages
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{lipsum} % For generating dummy text. You can remove this package if not needed.
+\usepackage{titling}
+\usepackage{changepage} % For adjusting margins locally
+
+% Title and Authors
+\title{{Path Following Robot using Computer Vision}}
+\author{
+  \LARGE{Shreyas Kumar}\thanks{The author was a Summer Research Fellow under Dr. G. V. V. Sharma, EED, IIT Hyderabad in the year 2023} \\
+  \normalsize{Email: shreyas.kumar@icloud.com}
+}
+\date{}
+
+% Define the title format
+
+\pretitle{\begin{center}\huge}
+\posttitle{\vspace{0.5em}\end{center}}
+\predate{}
+\postdate{}   
+
+
+\begin{document}
+
+% Title Page
+\begin{titlingpage}
+\maketitle 
+\begin{adjustwidth}{0cm}{0cm} % Adjust abstract width
+\vspace{150pt}
+\small{\textit{\textbf{Abstract}}\\
+\justifying
+\textit{The idea of this project was to make a path following robot which will trace the exact path given to it as an input with the help of a feedback control system. A top mounted mobile phone camera will feed live video of the environment to a server on the phone. This feed will be received on a system connected to the same Wi-Fi network using OpenCV for processing. After processing, a server on the system will further send commands to a onboard microcontroller, ESP32 which is again connected to the same Wi-Fi network. This microcontroller board will command the motors to move such that the given path is traced.}
+
+\end{adjustwidth}
+\end{titlingpage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+%---------------------------------------------------------------------------
+
+\section{Setting up the environment}
+
+\subsection{Transmitting the live feed}
+A streaming server was setup on phone using EpocCam application. The phone and the system were connected to the same Wi-Fi network for communication. The following Python code was used to receive the video stream:
+    
+
+\subsection{Identifying the robot in the video}
+To obtain a 2D vector of the robot's position in a top view grid, a distinctive marker will be used. These markers are typically designed to have unique patterns that can be easily detected and recognized by computer vision algorithms. In this project, ArUco Markers were used. \vspace{4pt} \\ ArUco markers are a popular choice for marker-based tracking. They consist of black and white squares arranged in a specific pattern. OpenCV provides functions to detect and identify ArUco markers, making them a convenient choice for obtaining a robot's position.
+
+% References
+% \begin{thebibliography}{9}
+% \bibitem{reference1}
+% Author One and Author Two. (Year). Title of the reference. \textit{Journal Name}, \textit{Volume}(Issue), page numbers.
+% \bibitem{reference2}
+% Author Three and Author Four. (Year). Title of the reference. \textit{Conference Name}, page numbers.
+% \end{thebibliography}
+
+\end{document}
