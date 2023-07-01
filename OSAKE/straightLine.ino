@@ -77,6 +77,16 @@ void trajectoryPlanner(float* targetRVal, float* targetLVal )
   float q2 = acos((sq(X)+sq(Y)-sq(A1)-sq(L2))/(2*L1*L2));
   float q1 = atan((L2*sin(q2))/(L1 + A2*cos(q2)));
 
+  // float d = sqrt((X*X)+(Y*Y));
+  // float calpha = (((A1*A1)+(A2*A2)-((X*X)+(Y*Y)))/(2*A1*A2));
+  // float salpha= sqrt(1-sq(calpha));
+  // float alpha=atan2(salpha,calpha);
+  // float q22 = (3.14-alpha);
+  // float alp= (atan2(Y,X));
+  // float beta =  (atan2((A2*sin(q22)),(A1+(A2*cos(q22)))));
+  // float q1= alp-beta;
+  // float q2= q22;
+  
   *targetRVal = q1*(180/3.14);
   *targetLVal = q2*(180/3.14);
 
