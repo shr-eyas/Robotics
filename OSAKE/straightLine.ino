@@ -1,3 +1,5 @@
+#include <math.h>
+
 const int dirPinL = 4;
 const int pwmPinL = 5;
 const int dirPinR = 6;
@@ -17,13 +19,13 @@ float posL = 0;
 int speedR = 0;
 int speedL = 0;
 
-float KpR = 2;
+float KpR = 10;
 float KdR = 0;
 
 float KpL = 3;
-float KdL = 2;
+float KdL = 0;
 
-float runTime = 10;
+float runTime = 5;
 float L1 = 105;
 float L2 = 105;
 
@@ -49,15 +51,6 @@ void loop() {
 
   float targetRV, targetLV;
   trajectoryPlanner(&targetRV, &targetLV);
-
-  // if (targetRV<2){
-  //   targetRV = 1;
-  // }
-
-  // if (targetLV<15){
-  //   targetLV = 1;
-  // }
-
   motorPositionControl(targetRV,targetLV);
   
   Serial.print(targetLV);
@@ -69,27 +62,27 @@ void loop() {
 // Function to generate joint positions as a function of time
 void trajectoryPlanner(float* targetRVal, float* targetLVal )   
 {
-  float X;
-  float Y;
-  endEffector(&X, &Y);  // Desired end effector position
 
-  // Equations for Inverse kinematics
-  float q2 = acos((sq(X)+sq(Y)-sq(A1)-sq(L2))/(2*L1*L2));
-  float q1 = atan((L2*sin(q2))/(L1 + A2*cos(q2)));
+  float time = timer(runTime);
+  float t = time / 1000;
 
-  // float d = sqrt((X*X)+(Y*Y));
-  // float calpha = (((A1*A1)+(A2*A2)-((X*X)+(Y*Y)))/(2*A1*A2));
-  // float salpha= sqrt(1-sq(calpha));
-  // float alpha=atan2(salpha,calpha);
-  // float q22 = (3.14-alpha);
-  // float alp= (atan2(Y,X));
-  // float beta =  (atan2((A2*sin(q22)),(A1+(A2*cos(q22)))));
-  // float q1= alp-beta;
-  // float q2= q22;
-  
+  float pi = 3.1415926;  
+  float q1 = ((pi*sign((42*pow(t,3))/25 - (63*pow(t,2))/5 + 210)*(sign((42*pow(t,3))/25 - (63*pow(t,2))/5 + 210) - 1))/2 - atan2(210*sqrt(1 - pow(((42*pow(t,3))/25 - (63*pow(t,2))/5 + 210),2)/44100), pow(((42*pow(t,3))/25 - (63*pow(t,2))/5 + 210),2)/ sqrt((pow( ((42*pow(t,3))/25 - (63*pow(t,2))/5 + 210),2)))));
+  float q2 = (pi - atan2( sqrt(1 - pow(( pow(((42*pow(t,3))/25 - (63*pow(t,2))/5 + 210),2)/22050 - 1),2)) , 1 - pow(((42*pow(t,3))/25 - (63*pow(t,2))/5 + 210),2)/22050));
+
   *targetRVal = q1*(180/3.14);
   *targetLVal = q2*(180/3.14);
 
+}
+
+double sign(float x) {
+  if (x < 0) {
+    return -1.0;
+  } else if (x > 0) {
+    return 1.0;
+  } else {
+    return 0.0;
+  }
 }
 
 void motorPositionControl(float targetR,float targetL)
@@ -97,9 +90,12 @@ void motorPositionControl(float targetR,float targetL)
   float angleR = calculateAngle(posR); 
   float angleL = calculateAngle(posL); 
 
+  Serial.print(angleL);
+  Serial.println(angleR);
+
+
   float errorR = targetR - angleR;
   float errorL = targetL - angleL;
-
 
   long currT = micros();
   long prevT = 0;
@@ -159,13 +155,13 @@ void motorPositionControl(float targetR,float targetL)
 }
 
 // Function to return X and Y as a function of time
-void endEffector(float* x, float* y) 
-{
-  float time = timer(runTime);
-  float sec = time / 1000;
-  *x = (210 / runTime) * sec;
-  *y = 0;
-}
+// void endEffector(float* x, float* y) 
+// {
+//   float time = timer(runTime);
+//   float t = time / 1000;
+//   *x = 25.2*pow(t,2) - 3.36*pow(t,3);
+//   *y = 0;
+// }
 
 // Funtion to return time in milliseconds variable 'runT' being run time 
 float timer(float runT)
