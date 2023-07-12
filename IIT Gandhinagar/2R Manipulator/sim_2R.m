@@ -1,8 +1,13 @@
 clc
 clear all
 
-[x,vx] = traj(0,2,10,20,0,0);
-[y,vy] = traj(0,2,0,0,0,0);
+xi = 5;
+yi = 5;
+xf = 20;
+yf = 0;
+
+[x,vx] = traj(0,2,xi,xf,0,0);
+[y,vy] = traj(0,2,yi,yf,0,0);
 
 syms t
 
