@@ -1,91 +1,138 @@
-
 #include <Arduino.h>
+
 #include <WiFi.h>
 
-Motor Motor1;
-Motor Motor2;
-double th = -45.0;
+const int MLA = 0;  
+const int MLB = 1;  
+const int MRA = 2;  
+const int MRB = 3; 
 
-void lock(int del) {
-  delay(del);
-  Motor1.lockMotor();
-  Motor2.lockMotor();
-  delay(1000);
-}
-
-// Move in forward direction
-void front() {
-  Motor1.moveMotor(127);
-  Motor2.moveMotor(127);
-  lock(300);
-}
-
-// Move in backward direction
-void back() {
-  Motor1.moveMotor(-127);
-  Motor2.moveMotor(-127);
-  lock(300);
-}
-
-// Rotate 90 degrees clockwise
-void right() {
-  Motor1.moveMotor(127);
-  Motor2.moveMotor(-127);
-  lock(190);
-}
-
-// Rotate 90 degrees anticlockwise
-void left() {
-  Motor1.moveMotor(-127);
-  Motor2.moveMotor(127);
-  lock(190);
-}
-
-// Get RSSI at a point
-double getRSSI() {
-  delay(100);
-  double sig_read;
-  while ((sig_read = WiFi.RSSI()) > 0);
-  return sig_read;
-}
-
-// Infinite loop to prevent loop() from iterating again
-void stop() {
-  while (1);
-}
+/**
+ * This is a header file which contains WiFi network credentials. 
+ * Its contents are:
+ *
+ * const char *ssid = "YOUR-SSID-HERE";
+ * const char *password = "YOUR-PASSWORD-HERE";
+ *
+*/
+#include "credentials.h"
 
 void setup() {
-  Motor1.attach(14, 16, 17);
-  Motor2.attach(15, 18, 19);
+
+  ledcSetup(MLA, 5000, 8);
+  ledcSetup(MLB, 5000, 8);
+  ledcSetup(MRA, 5000, 8);
+  ledcSetup(MRB, 5000, 8);
+
+  ledcAttachPin(16, MLA);
+  ledcAttachPin(17, MLB);
+  ledcAttachPin(18, MRA);
+  ledcAttachPin(19, MRB);
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED);
 }
 
-// Helper routine to get index position maximum of an array
-int maxArray(double *arr, int sz) {
-  double mx = arr[0];
-  int idx = 0;
-  for (int i = 1; i < sz; i++) if (mx < arr[i]) mx = arr[i], idx = i;
-  return idx;
+void loop() 
+{
+  int Frssi = check_RSSI();
+  while (Frssi>114)
+  {
+    int Frssi = check_RSSI();
+  }
+  rightTurn();
+  int Rrssi = check_RSSI();
+  leftTurn();
+  leftTurn();
+  int Lrssi = check_RSSI();
+  int mxOf=maxof(Frssi,Rrssi,Lrssi);
+
+  for (int i=0;i<mxOf;i++)
+  {
+    rightTurn();
+  }
+  forward();
+  stop();
+  delay(500);
 }
 
-void loop() {
-  // Need to read RSSI Values
-  // At point, then ahead, and then behind
-  // EDIT: Three points might be a bit bad... Let's
-  // try five points?
-  int N = 5;
-  double rssi[N];
-  rssi[0] = getRSSI();
-  for (int i = 1; i < N; i++) {
-      front();
-      rssi[i] = getRSSI();
-      if (rssi[i] >= th) stop();
+void rightTurn()
+{
+  right();
+  delay(400);
+  stop();
+  delay(500);
+}
+
+void leftTurn()
+{
+  left();
+  delay(400);
+  stop();
+  delay(500);
+}
+
+int maxof(int a,int b,int c)
+{
+  int mx = 1;
+  if (b>a)
+  {
+    mx = 2;
+    if (c>=b)
+    {
+      mx = 0;   
+    }
   }
-  int idx = maxArray(rssi, N); 
-  for (int i = N - 1; i > idx; i--) back();
-  if (idx > 0 && idx < N-1) left();
-  else if (idx == 0) back();
-  else front();
+ else if (c>=a)
+ {
+  mx=0;
+ }
+ return mx;
+}
+
+void front() {
+  ledcWrite(MLA, 127);
+  ledcWrite(MLB, 0); 
+  ledcWrite(MRA, 127);
+  ledcWrite(MRB, 0); 
+}
+
+void right() {
+  ledcWrite(MLA, 127);
+  ledcWrite(MLB, 0); 
+  ledcWrite(MRA, 0);
+  ledcWrite(MRB, 0); 
+}
+
+void left() {
+  ledcWrite(MLA, 0);
+  ledcWrite(MLB, 0); 
+  ledcWrite(MRA, 127);
+  ledcWrite(MRB, 0); 
+}
+
+void back() {
+  ledcWrite(MLA, 0);
+  ledcWrite(MLB, 127); 
+  ledcWrite(MRA, 0);
+  ledcWrite(MRB, 127); 
+}
+
+void stop() {
+  ledcWrite(MLA, 0);
+  ledcWrite(MLB, 127); 
+  ledcWrite(MRA, 0);
+  ledcWrite(MRB, 127); 
+}
+
+double check_RSSI() {
+  int rssi=0;
+  for(int i=0; i<20; i++)
+  {
+  while((rssi = WiFi.RSSI())>0);
+  rssi = rssi + WiFi.RSSI();
+  }
+  rssi = rssi / 40;
+  return rssi;
 }
