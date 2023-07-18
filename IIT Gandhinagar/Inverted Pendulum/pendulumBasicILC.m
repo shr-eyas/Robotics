@@ -8,10 +8,10 @@ stopTime = 10;
 ts = 0.1;
 time = 0:ts:stopTime;
 
-maxIterations = 10;
+numIterations = 10;
 
-theta = zeros(maxIterations, numel(time));
-thetaD = zeros(maxIterations, numel(time));
+theta = zeros(numIterations, numel(time));
+thetaD = zeros(numIterations, numel(time));
 
 theta(:, 1) = 0;
 thetaD(:, 1) = 0;
@@ -21,28 +21,28 @@ lambdaILC = 1;
 
 [x, ~] = traj(0, stopTime, 0, pi, 0, 0);
 
-desiredTheta = pi*ones(maxIterations, numel(time));
+desiredTheta = pi*ones(numIterations, numel(time));
 
 syms t 
 
-for k = 1:maxIterations
+for k = 1:numIterations
     [x_k, ~] = traj(0, stopTime, 0, pi, 0, 0);  
     desiredTheta(k, :) = subs(x_k, t, time);
 end
 
-tauILC = zeros(maxIterations, numel(time));
+tauILC = zeros(numIterations, numel(time));
 
 figure; 
 hold on;
 
-for k = 2:maxIterations
+for k = 2:numIterations
     error = desiredTheta(k, :) - theta(k, :);
-    for i = 2:numel(time)
+    for t = 2:numel(time)
         
-        tauILC(k, i) = lambdaILC*tauILC(k-1, i-1) + gammaILC*(error(i-1));
-        thetaDD = tauILC(k, i) - (g / L) * (theta(k, i-1));
-        thetaD(k, i) = thetaD(k, i-1) + thetaDD * ts;
-        theta(k, i) = theta(k, i-1) + thetaD(k, i) * ts;
+        tauILC(k, t) = lambdaILC*tauILC(k-1, t-1) + gammaILC*(error(t-1));
+        thetaDD = tauILC(k, t) - (g / L) * (theta(k, t-1));
+        thetaD(k, t) = thetaD(k, t-1) + thetaDD * ts;
+        theta(k, t) = theta(k, t-1) + thetaD(k, t) * ts;
     end
     plot(time, theta(k, :));
 end
