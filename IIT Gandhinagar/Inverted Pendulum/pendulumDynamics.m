@@ -1,4 +1,4 @@
-function dx = dynamics_pendulum(t,x)
+function dx = pendulumDynamics(t,x)
 m = 1;
 l = 0.5;
 g = 9.81;
