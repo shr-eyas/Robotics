@@ -1,46 +1,53 @@
+% ILC from Arimoto's 1984 paper
+
+clc
 L = 1;
 g = 9.81;
 
 stopTime = 10;
-ts = 0.01;
+ts = 0.1;
 time = 0:ts:stopTime;
 
-theta = zeros(10, numel(time));
-thetaD = zeros(10, numel(time));
+maxIterations = 10;
+
+theta = zeros(maxIterations, numel(time));
+thetaD = zeros(maxIterations, numel(time));
 
 theta(:, 1) = 0;
 thetaD(:, 1) = 0;
 
-Kp = 10;
-Kd = 0;
-gammaILC = 0.01; 
+gammaILC = 1; 
+lambdaILC = 1;
 
 [x, ~] = traj(0, stopTime, 0, pi, 0, 0);
 
-desiredTheta = zeros(10, numel(time));
+desiredTheta = pi*ones(maxIterations, numel(time));
 
-for k = 1:10
+syms t 
+
+for k = 1:maxIterations
     [x_k, ~] = traj(0, stopTime, 0, pi, 0, 0);  
     desiredTheta(k, :) = subs(x_k, t, time);
 end
 
-tau = zeros(10, numel(time));
+tauILC = zeros(maxIterations, numel(time));
 
-figure;  % Create a new figure
+figure; 
 hold on;
 
-for k = 2:10
+for k = 2:maxIterations
     error = desiredTheta(k, :) - theta(k, :);
-
     for i = 2:numel(time)
-        tau(k, i) = tau(k-1, i-1) + gammaILC * (error(i) / ts);
         
-        thetaDD = tau(k, i) - (g / L) * (theta(k, i-1));
+        tauILC(k, i) = lambdaILC*tauILC(k-1, i-1) + gammaILC*(error(i-1));
         
+
+
+        
+        thetaDD = tauILC(k, i) - (g / L) * (theta(k, i-1));
         thetaD(k, i) = thetaD(k, i-1) + thetaDD * ts;
         theta(k, i) = theta(k, i-1) + thetaD(k, i) * ts;
     end
-
     plot(time, theta(k, :));
 end
 
