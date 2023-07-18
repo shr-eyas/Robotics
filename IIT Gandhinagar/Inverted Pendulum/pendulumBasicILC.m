@@ -40,10 +40,6 @@ for k = 2:maxIterations
     for i = 2:numel(time)
         
         tauILC(k, i) = lambdaILC*tauILC(k-1, i-1) + gammaILC*(error(i-1));
-        
-
-
-        
         thetaDD = tauILC(k, i) - (g / L) * (theta(k, i-1));
         thetaD(k, i) = thetaD(k, i-1) + thetaDD * ts;
         theta(k, i) = theta(k, i-1) + thetaD(k, i) * ts;
