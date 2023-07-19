@@ -5,6 +5,20 @@
 const int MLD = 25; // Connect to GPIO25 Left Direction
 const int MRD = 14; // Connect to GPIO14 Right Direction
 
+// Desired position 
+float desiredY = 90;
+
+// PID constants
+float Kp = 1.0; 
+float Ki = 0.1; 
+float Kd = 0.01; 
+
+// Variables for PID control
+float prevErrorY = 0.0;
+float P;
+float D;
+float I = 0.0;
+
 // MPU calibration offsets
 float offsetX = 0;
 float offsetY = 0;
@@ -72,7 +86,6 @@ void setup(void)
   ledcAttachPin(33, MRP);  // Connect to GPIO33 Left PWM 
 }
 
-
 void loop() 
 {
   sensors_event_t a, g, temp;
@@ -107,6 +120,31 @@ void loop()
 
   preInterval = millis();
   Serial.println(angleY);
-  
 
+  // Measure desiredY by keeping the robot erect and measuring angleY value
+  float errorY = desiredY - angleY;
+
+  // Calculate PID components
+  P = Kp * errorY;
+  I = I + Ki * errorY * interval; 
+  D = Kd * (errorY - prevErrorY) / interval;
+
+  // Calculate the PWM value using PID components
+  float pwmVal = P + I + D;
+
+  // Update prevErrorY for the next iteration
+  prevErrorY = errorY;
+
+  if (pwmVal<0) {
+    digitalWrite(MLD, 1);
+    digitalWrite(MRD, 1);
+    ledcWrite(MLP, pwmVal);
+    ledcWrite(MRP, pwmVal);
+  }
+  else {
+    digitalWrite(MLD, 0);
+    digitalWrite(MRD, 0);
+    ledcWrite(MLP, pwmVal);
+    ledcWrite(MRP, pwmVal);
+  }
 }
