@@ -15,9 +15,6 @@ tau = 0;
 % x is the state vector [position; angular velocity]
 [t, x] = ode45(@(t, x) pendulumDynamics(t, x, m, L, tau), t_span, initial_state);
 
-% Convert angles from radians to degrees and wrap between 0 and 360 degrees
-x(:, 1) = (x(:, 1));
-
 figure;
 subplot(2, 1, 1);
 plot(t, x(:, 1));
