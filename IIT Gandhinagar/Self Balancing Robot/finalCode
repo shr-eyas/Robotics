@@ -11,9 +11,9 @@ float angleX = 0;
 float desiredX = 0;
 
 // PID constants
-float Kp = 5; 
-float Ki = 0; 
-float Kd = 0.1; 
+float kp = 5.31; 
+float ki = 0.00001; 
+float kd = 0.00002;   
 
 // Variables for PID control
 float error = 0;
@@ -27,8 +27,8 @@ float pwmVal = 0;
 float driverOP = 70;
 
 // PWM variables 
-const int MLP = 0;  
-const int MRP = 1;  
+const int MLP = 0;
+const int MRP = 1;
 const int freq = 5000;
 const int resolution = 8;
 
@@ -49,10 +49,10 @@ void setup() {
   // Motor PWM setup
   ledcSetup(MLP, freq, resolution);
   ledcSetup(MRP, freq, resolution);
-  pinMode(MRD, OUTPUT); 
-  pinMode(MLD, OUTPUT); 
-  ledcAttachPin(33, MLP);  // Connect to GPIO27 Right PWM
-  ledcAttachPin(27, MRP);  // Connect to GPIO33 Left PWM 
+  pinMode(MRD, OUTPUT);
+  pinMode(MLD, OUTPUT);
+  ledcAttachPin(33, MLP); // Connect to GPIO27 Right PWM
+  ledcAttachPin(27, MRP); // Connect to GPIO33 Left PWM
 }
 
 void loop() {
@@ -62,35 +62,44 @@ void loop() {
   angleX = mpu6050.getAngleX();
   error = desiredX - angleX;
 
-  // PID components 
-  proportional = Kp * (error);
-  integral = integral + Ki * error;
-  derivative = Kd * (error - previousError);
+  // PID components
+  proportional = kp * error;
+  integral += ki * error;
+  derivative = kd * (error - previousError);
   previousError = error;
 
   pwmVal = proportional + integral + derivative;
 
   // Motor driver output
   driverOP = abs(pwmVal);
-  if (driverOP>100){
+  if (driverOP > 100) {
     driverOP = 100;
   }
 
   // PWM control
-  if (error<=0) {
-    digitalWrite(MLD, 1);
-    digitalWrite(MRD, 1);
-    ledcWrite(MLP, driverOP);
-    ledcWrite(MRP, driverOP);
-  }
-  else if (error>0) {
+  if (error <= 0 && error > -40) {
     digitalWrite(MLD, 0);
     digitalWrite(MRD, 0);
     ledcWrite(MLP, driverOP);
     ledcWrite(MRP, driverOP);
+  } else if (error > 0 && error < 40) {
+    digitalWrite(MLD, 1);
+    digitalWrite(MRD, 1);
+    ledcWrite(MLP, driverOP);
+    ledcWrite(MRP, driverOP);
+  } else if (angleX > 40) {
+    digitalWrite(MLD, 0);
+    digitalWrite(MRD, 0);
+    ledcWrite(MLP, 0);
+    ledcWrite(MRP, 0);
+  } else if (angleX < -40) {
+    digitalWrite(MLD, 0);
+    digitalWrite(MRD, 0);
+    ledcWrite(MLP, 0);
+    ledcWrite(MRP, 0);
   }
 
-  //Serial print for debugging
+  // Serial print for debugging
   Serial.print(angleX);
   Serial.print(" ");
   Serial.print(error);
@@ -98,5 +107,4 @@ void loop() {
   Serial.print(pwmVal);
   Serial.print(" ");
   Serial.println(driverOP);
-
 }
