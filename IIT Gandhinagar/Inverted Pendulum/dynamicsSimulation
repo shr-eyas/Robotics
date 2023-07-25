@@ -1,9 +1,9 @@
-m = 1;    
-L = 1;     
-t_span = [0, 10];  
+m = 1;              % Mass = 1kg
+L = 1;              % Length = 1m
+t_span = [0, 10];   % Time (t=0 to t=10 seconds)
 
 % Initial state [position; angular velocity]
-initial_state = [pi/2; 0]; 
+initial_state = [0; 0]; 
 
 % Torque input
 tau = 0;  
@@ -24,6 +24,3 @@ plot(t, x(:, 2));
 xlabel('Time (s)');
 ylabel('Angular Velocity (rad/s)');
 title('Angular Velocity');
-
-
-
