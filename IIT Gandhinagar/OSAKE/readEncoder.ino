@@ -43,7 +43,7 @@ void loop() {
   volatile int thetaLeft = (leftEncoderVal*360/(2*4096));
   volatile int thetaRight = (rightEncoderVal*360/(2*4096))*1.02857;
 
-  \\ Serial printing the angles
+  // Serial printing the angles
   Serial.print(thetaLeft);
   Serial.print(" ");
   Serial.println(thetaRight);
