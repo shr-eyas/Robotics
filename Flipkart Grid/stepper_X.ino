@@ -8,11 +8,13 @@ void setup() {
   pinMode(STEP_PIN, OUTPUT);
   pinMode(DIR_PIN, OUTPUT);
   pinMode(ENABLE_PIN, OUTPUT);
-  
+  // 2595 for end to end
+  // 0.2 mm/step
+  // 5 step/mm
   // Disable the motor (active low)
   digitalWrite(ENABLE_PIN, HIGH);
   // Set the desired number of steps and direction
-  int numberOfSteps = 2500; // Change this to the desired number of steps
+  int numberOfSteps = 2595; // Change this to the desired number of steps
   boolean direction = HIGH; // HIGH for one direction, LOW for the other
   
   // Enable the motor (active low)
