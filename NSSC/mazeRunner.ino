@@ -9,6 +9,8 @@ const int dirPinL = 9;
 const int pwrPinR = 10;
 const int pwrPinL = 11;
 
+const double baseSpeed = 100;
+
 long durationR, durationF, durationL;
 double distanceR, distanceF, distanceL, requiredR, thresholdDistance;
 
