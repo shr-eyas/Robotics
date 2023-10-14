@@ -1,5 +1,5 @@
 // Define the connections to the DRV8825 driver
-#define STEP_PIN_Y 8
+#define STEP_PIN_Y 10
 #define DIR_PIN_Y 2
 #define ENABLE_PIN_Y 3
 
@@ -7,7 +7,7 @@
 #define DIR_PIN_X 4
 #define ENABLE_PIN_X 5
 
-#define servoPin 10
+#define servoPin 11
 
 //200 steps=40mm
 void setup() {
