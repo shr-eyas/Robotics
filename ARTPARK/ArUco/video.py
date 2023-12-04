@@ -1,3 +1,4 @@
+# checking the input from camera
 import cv2
 import cv2.aruco as arcuo
 
