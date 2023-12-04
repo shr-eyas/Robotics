@@ -1,6 +1,6 @@
 # code to capture either the image or the video
 import cv2
-import cv2.aruco as arcuo
+import cv2.aruco as aruco
 
 VideoCap = False
 cap = cv2.VideoCapture(0)
